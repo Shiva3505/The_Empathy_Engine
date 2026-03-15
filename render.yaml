@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: empathy-engine
+    env: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: USE_VADER
+        value: "true"
+      - key: PYTHONUNBUFFERED
+        value: "1"
