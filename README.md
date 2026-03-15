@@ -237,7 +237,7 @@ The confidence score determines how strongly the emotion affects voice parameter
 
 ---
 
-## 🌟 Bonus Features Implemented
+## 🌟 Features Implemented
 
 - ✅ **Granular Emotion Detection** — 7 emotions (joy, anger, sadness, surprise, fear, disgust, neutral)
 - ✅ **Emotion Intensity Scaling** — Voice parameters scale with confidence score
