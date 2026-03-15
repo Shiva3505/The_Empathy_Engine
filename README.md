@@ -1,289 +1,252 @@
 # 🎭 The Empathy Engine: Giving AI a Human Voice
 
-An AI-powered service that detects the emotion of input text and dynamically modulates vocal characteristics to produce **emotionally expressive speech**.
+An AI-powered system that detects the **emotion in text** and generates **emotionally expressive speech** by dynamically adjusting voice characteristics such as **pitch, rate, and volume**.
 
-Built with **HuggingFace Transformers**, **FastAPI**, and **pyttsx3** — designed to demonstrate NLP, AI model integration, and clean software architecture.
+This project demonstrates the integration of **Natural Language Processing (NLP)** with **Text-to-Speech (TTS)** to create speech that reflects the emotional tone of the input.
 
----
-
-## 📋 Problem Statement
-
-Traditional text-to-speech systems produce flat, monotone audio regardless of the emotional content of the text. The Empathy Engine bridges this gap by:
-
-1. **Detecting emotion** from input text using state-of-the-art NLP models
-2. **Mapping** each emotion to appropriate vocal parameters
-3. **Generating speech** that sounds happy, sad, angry, or surprised — not just robotic
+🌐 **Live Demo**  
+https://empathy-engine-sbrn.onrender.com
 
 ---
 
-## 🏗️ Architecture
+# 📋 Problem Statement
+
+Most traditional **Text-to-Speech (TTS)** systems produce flat and robotic speech regardless of the emotional meaning of the text.
+
+The **Empathy Engine** solves this by:
+
+- Detecting the **emotion** of input text using an NLP model
+- Mapping detected emotion to **voice characteristics**
+- Generating **emotionally expressive speech**
+
+This helps AI systems communicate in a **more human-like and engaging way**.
+
+---
+
+# 🏗️ System Architecture
 
 ```
-┌─────────────┐    ┌─────────────────┐    ┌──────────────┐    ┌─────────────┐
-│  Text Input  │───▶│ Emotion Detector │───▶│ Voice Mapper  │───▶│  TTS Engine  │
-│  (API/Web)   │    │ (HuggingFace /  │    │ (Intensity    │    │ (pyttsx3 /  │
-│              │    │  VADER fallback) │    │  Scaling)     │    │  gTTS)      │
-└─────────────┘    └─────────────────┘    └──────────────┘    └──────┬──────┘
-                                                                       │
-                                                                       ▼
-                                                               ┌─────────────┐
-                                                               │ Audio Output │
-                                                               │  (.wav/.mp3) │
-                                                               └─────────────┘
+Text Input
+     │
+     ▼
+Emotion Detection
+(HuggingFace Model / VADER)
+     │
+     ▼
+Voice Mapping
+(Emotion → Pitch, Rate, Volume)
+     │
+     ▼
+Text-to-Speech Engine
+(pyttsx3 / gTTS)
+     │
+     ▼
+Audio Output
 ```
-
-### Module Breakdown
-
-| Module               | Responsibility                                    |
-|----------------------|---------------------------------------------------|
-| `emotion_detector.py`| Classifies text into 7 emotions with confidence   |
-| `voice_mapper.py`    | Maps emotion → pitch, rate, volume with scaling   |
-| `tts_engine.py`      | Generates speech audio with SSML-like processing  |
-| `app.py`             | FastAPI server with REST API and web interface     |
 
 ---
 
-## 🛠️ Tech Stack
+# 🧩 Project Modules
 
-| Category            | Technology                                          |
-|---------------------|-----------------------------------------------------|
-| **Language**        | Python 3.9+                                         |
-| **NLP Model**       | `j-hartmann/emotion-english-distilroberta-base`     |
-| **Fallback NLP**    | VADER Sentiment Analysis                            |
-| **TTS Primary**     | pyttsx3 (offline, parameter control)                |
-| **TTS Fallback**    | gTTS (Google Text-to-Speech)                        |
-| **Web Framework**   | FastAPI + Uvicorn                                   |
-| **Frontend**        | Vanilla HTML/CSS/JS with glassmorphism design       |
+| Module | Description |
+|------|-------------|
+| `emotion_detector.py` | Detects emotion from text |
+| `voice_mapper.py` | Maps emotions to voice parameters |
+| `tts_engine.py` | Converts processed text into speech |
+| `app.py` | FastAPI server and web interface |
 
 ---
 
-## ⚡ Installation
+# 🛠️ Tech Stack
 
-### 1. Clone the Repository
+### Programming Language
+- Python 3.9+
 
-```bash
-git clone https://github.com/<your-username>/empathy-engine.git
-cd empathy-engine
+### Machine Learning / NLP
+- HuggingFace Transformers  
+- DistilRoBERTa Emotion Model  
+- VADER Sentiment Analysis (fallback)
+
+### Speech Synthesis
+- pyttsx3
+- gTTS (fallback)
+
+### Backend Framework
+- FastAPI
+- Uvicorn
+
+### Frontend
+- HTML
+- CSS
+- JavaScript
+
+### Deployment
+- Render
+
+---
+
+# 📁 Project Structure
+
+```
+The_Empathy_Engine/
+│
+├── app.py
+├── emotion_detector.py
+├── voice_mapper.py
+├── tts_engine.py
+├── requirements.txt
+├── README.md
+├── LICENSE
+│
+├── static/
+│   └── audio/
+│
+└── templates/
+    └── index.html
 ```
 
-### 2. Create a Virtual Environment (recommended)
+---
 
-```bash
+# ⚙️ Installation
+
+### 1️⃣ Clone the Repository
+
+```
+git clone https://github.com/Shiva3504/The_Empathy_Engine.git
+```
+
+```
+cd The_Empathy_Engine
+```
+
+---
+
+### 2️⃣ Create Virtual Environment
+
+Windows
+
+```
 python -m venv venv
-source venv/bin/activate   # Linux/Mac
-venv\Scripts\activate      # Windows
+venv\Scripts\activate
 ```
 
-### 3. Install Dependencies
+Linux / Mac
 
-```bash
+```
+python3 -m venv venv
+source venv/bin/activate
+```
+
+---
+
+### 3️⃣ Install Dependencies
+
+```
 pip install -r requirements.txt
 ```
 
-> **Note**: The HuggingFace model (~300MB) will be downloaded automatically on first run. If you prefer a lightweight setup, the system falls back to VADER sentiment analysis.
-
 ---
 
-## 🚀 How to Run
+# 🚀 Run the Project
 
-### Start the Server (Full — with HuggingFace Transformer)
+Start the FastAPI server:
 
-```bash
+```
 python app.py
 ```
 
-> The HuggingFace model (~300MB) downloads automatically on first run. Startup may take a minute.
-
-### Start the Server (Lightweight — with VADER)
-
-For faster startup without downloading large models:
-
-```bash
-# Linux / macOS
-USE_VADER=true python app.py
-
-# Windows PowerShell
-$env:USE_VADER="true"; python app.py
-```
-
-The server starts at **http://localhost:8000**.
-
-### Web Interface
-
-Open your browser and navigate to:
+Open the browser:
 
 ```
 http://localhost:8000
 ```
 
-You'll see a sleek dark-themed interface where you can:
-1. Enter any text
-2. Click **"Detect Emotion & Speak"**
-3. View the detected emotion, confidence scores, and voice parameters
-4. Listen to the emotionally expressive audio
+---
 
-### REST API
+# 🌐 Live Demo
 
-Use `curl` or any HTTP client:
+You can directly test the deployed application here:
 
-```bash
-curl -X POST http://localhost:8000/speak \
-  -H "Content-Type: application/json" \
-  -d '{"text": "I just got the best news of my life! This is incredible!"}'
-```
+https://empathy-engine-sbrn.onrender.com
 
 ---
 
-## 📝 Example Input & Output
+# 🔌 API Endpoints
 
-### Example 1: Happy Text
+| Endpoint | Method | Description |
+|--------|--------|-------------|
+| `/` | GET | Web interface |
+| `/speak` | POST | Detect emotion and generate speech |
+| `/analyze` | POST | Emotion detection only |
+| `/mapping` | GET | Emotion to voice mapping |
+| `/health` | GET | Health check |
 
-**Input**:
-```json
-{"text": "I just got promoted! This is the best day ever!"}
-```
+---
 
-**Output**:
+# 📝 Example API Request
+
+POST /speak
+
+Request
+
 ```json
 {
-  "emotion": {
-    "label": "joy",
-    "score": 0.9841,
-    "intensity": "strong",
-    "all_scores": {
-      "joy": 0.9841,
-      "surprise": 0.0089,
-      "neutral": 0.0035,
-      "anger": 0.0012,
-      "sadness": 0.0010,
-      "fear": 0.0008,
-      "disgust": 0.0005
-    }
-  },
+"text": "I just got the best news of my life!"
+}
+```
+
+Example Response
+
+```json
+{
+  "emotion": "joy",
+  "confidence": 0.98,
   "voice_params": {
     "rate": 228,
     "pitch": 60,
     "volume": 0.92
   },
-  "voice_description": "Faster speech, higher pitch, louder volume — upbeat and energetic",
-  "audio_url": "/static/audio/output_a1b2c3d4.wav"
-}
-```
-
-### Example 2: Sad Text
-
-**Input**:
-```json
-{"text": "I feel so alone. Nobody understands what I'm going through."}
-```
-
-**Output**:
-```json
-{
-  "emotion": {
-    "label": "sadness",
-    "score": 0.9523,
-    "intensity": "strong"
-  },
-  "voice_params": {
-    "rate": 131,
-    "pitch": 40,
-    "volume": 0.64
-  },
-  "voice_description": "Slower speech, lower pitch, softer volume — subdued and reflective"
+  "audio_url": "/static/audio/output.wav"
 }
 ```
 
 ---
 
-## 🎯 Emotion-to-Voice Mapping Logic
+# 🌟 Features
 
-The system uses **intensity-based interpolation** — voice parameters scale proportionally to the confidence score of the detected emotion.
-
-| Emotion     | Rate (wpm) | Pitch | Volume | Style                    |
-|-------------|------------|-------|--------|--------------------------|
-| **Joy**     | 228 (+30%) | 60    | 0.92   | Upbeat, energetic        |
-| **Anger**   | 201 (+15%) | 45    | 1.00   | Intense, forceful        |
-| **Sadness** | 131 (-25%) | 40    | 0.64   | Subdued, reflective      |
-| **Surprise**| 210 (+20%) | 65    | 0.96   | Animated, excited        |
-| **Fear**    | 193 (+10%) | 58    | 0.68   | Tense, anxious           |
-| **Disgust** | 158 (-10%) | 43    | 0.72   | Dismissive, withdrawn    |
-| **Neutral** | 175 (base) | 50    | 0.80   | Calm, balanced           |
-
-### Intensity Scaling
-
-The confidence score determines how strongly the emotion affects voice parameters:
-
-| Confidence | Intensity | Scaling Factor |
-|------------|-----------|----------------|
-| ≥ 0.8      | Strong    | 100%           |
-| ≥ 0.5      | Moderate  | 70%            |
-| ≥ 0.3      | Mild      | 40%            |
-| < 0.3      | Minimal   | 20%            |
-
-**Example**: *"This is good"* → mild joy (40% scaling) vs. *"This is the best news ever!"* → strong joy (100% scaling)
+- Emotion Detection from text
+- Emotion-based voice modulation
+- Real-time speech generation
+- Interactive web interface
+- REST API support
+- Dual fallback system (NLP + TTS)
+- Deployable AI service
 
 ---
 
-## 🔌 API Endpoints
+# 🔮 Future Improvements
 
-| Endpoint       | Method | Description                    |
-|----------------|--------|--------------------------------|
-| `/`            | GET    | Web interface                  |
-| `/speak`       | POST   | Detect emotion & generate audio|
-| `/analyze`     | POST   | Emotion analysis only (no audio)|
-| `/mapping`     | GET    | View emotion-to-voice mapping  |
-| `/health`      | GET    | Service health check           |
+- Multi-language emotion detection
+- Voice cloning support
+- Real-time streaming audio
+- Custom voice profiles
+- Conversation emotion tracking
 
 ---
 
-## 🌟 Features Implemented
+# 📜 License
 
-- ✅ **Granular Emotion Detection** — 7 emotions (joy, anger, sadness, surprise, fear, disgust, neutral)
-- ✅ **Emotion Intensity Scaling** — Voice parameters scale with confidence score
-- ✅ **Web Interface** — Premium dark-themed UI with glassmorphism design
-- ✅ **SSML-like Support** — Automatic emphasis on emotional keywords and contextual pauses
-- ✅ **Dual Backend Fallback** — HuggingFace → VADER for NLP; pyttsx3 → gTTS for TTS
+This project is licensed under the **MIT License**.
 
 ---
 
-## 🔮 Future Improvements
+# 👨‍💻 Author
 
-1. **Multi-language Support** — Extend emotion detection and TTS to additional languages
-2. **Voice Cloning** — Use models like Coqui TTS for personalized voice synthesis
-3. **Real-time Streaming** — WebSocket-based streaming for live emotional speech
-4. **Prosody Control** — Fine-grained control over intonation contours
-5. **Emotion History** — Track emotional arcs over conversation threads
-6. **Custom Voice Profiles** — Allow users to define their own emotion-to-voice mappings
-7. **Batch Processing** — Process multiple texts in a single API call
+**Shiva Ram Reddy Gunnala**
+
+GitHub  
+https://github.com/Shiva3505
 
 ---
 
-## 📁 Project Structure
-
-```
-empathy-engine/
-├── app.py                  # FastAPI application & API endpoints
-├── emotion_detector.py     # Emotion classification module
-├── voice_mapper.py         # Emotion → voice parameter mapping
-├── tts_engine.py           # Text-to-speech synthesis engine
-├── requirements.txt        # Python dependencies
-├── README.md               # This file
-├── .gitignore              # Git ignore rules
-├── static/
-│   └── audio/              # Generated audio files
-└── templates/
-    └── index.html          # Web interface
-```
-
----
-
-## 📜 License
-
-This project is open source and available under the [MIT License](LICENSE).
-
----
-
-<p align="center">
-  <strong>The Empathy Engine</strong> — Because AI should speak with feeling, not just words.
-</p>
+⭐ If you like this project, consider giving it a **star on GitHub**.
