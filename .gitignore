@@ -1,0 +1,39 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+
+# Distribution / packaging
+*.egg-info/
+*.egg
+dist/
+build/
+
+# Virtual environments
+.env
+.venv/
+venv/
+env/
+
+# Generated audio files (keep the directory via .gitkeep)
+static/audio/*.wav
+static/audio/*.mp3
+
+# Logs
+*.log
+
+# IDE / editor settings
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Model cache (HuggingFace downloads)
+.cache/

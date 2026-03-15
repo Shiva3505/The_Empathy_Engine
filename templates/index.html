@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="The Empathy Engine — AI-powered emotion-aware text-to-speech that gives AI a human voice.">
+    <title>The Empathy Engine — AI with a Human Voice</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: rgba(255, 255, 255, 0.04);
+            --bg-card-hover: rgba(255, 255, 255, 0.07);
+            --border: rgba(255, 255, 255, 0.08);
+            --border-glow: rgba(139, 92, 246, 0.3);
+            --text-primary: #f0f0f5;
+            --text-secondary: #8a8a9a;
+            --text-muted: #5a5a6a;
+            --accent-purple: #8b5cf6;
+            --accent-blue: #3b82f6;
+            --accent-pink: #ec4899;
+            --accent-emerald: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-red: #ef4444;
+            --accent-cyan: #06b6d4;
+            --gradient-main: linear-gradient(135deg, #8b5cf6, #3b82f6, #06b6d4);
+            --shadow-glow: 0 0 40px rgba(139, 92, 246, 0.15);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(139,92,246,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(139,92,246,0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-glow {
+            position: fixed;
+            top: -40%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(139,92,246,0.08) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 780px;
+            margin: 0 auto;
+            padding: 40px 24px 60px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .header-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--accent-purple);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        .header-badge .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent-emerald);
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        h1 {
+            font-size: 42px;
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -1px;
+            margin-bottom: 12px;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: var(--text-secondary);
+            font-weight: 400;
+            line-height: 1.6;
+        }
+
+        /* Card */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            backdrop-filter: blur(20px);
+            transition: border-color 0.3s ease;
+        }
+
+        .card:hover { border-color: var(--border-glow); }
+
+        .card + .card { margin-top: 20px; }
+
+        .card-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        /* Text Area */
+        .input-group { position: relative; }
+
+        textarea {
+            width: 100%;
+            min-height: 130px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            line-height: 1.6;
+            resize: vertical;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent-purple);
+            box-shadow: 0 0 0 3px rgba(139,92,246,0.15);
+        }
+
+        textarea::placeholder { color: var(--text-muted); }
+
+        .char-count {
+            position: absolute;
+            bottom: 12px;
+            right: 16px;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        /* Button */
+        .btn-primary {
+            width: 100%;
+            padding: 14px 28px;
+            margin-top: 16px;
+            background: var(--gradient-main);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .btn-primary:active { transform: translateY(0); }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-primary .spinner {
+            display: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin-right: 8px;
+        }
+
+        .btn-primary.loading .spinner { display: inline-block; }
+        .btn-primary.loading .btn-text { opacity: 0.8; }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Results */
+        .results { display: none; }
+        .results.visible { display: block; }
+
+        .emotion-display {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .emotion-emoji {
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            background: var(--bg-secondary);
+            border-radius: 14px;
+            border: 1px solid var(--border);
+        }
+
+        .emotion-info { flex: 1; }
+
+        .emotion-label {
+            font-size: 20px;
+            font-weight: 700;
+            text-transform: capitalize;
+            margin-bottom: 4px;
+        }
+
+        .emotion-meta {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .confidence-bar-container {
+            margin-bottom: 24px;
+        }
+
+        .confidence-bar-bg {
+            height: 6px;
+            background: var(--bg-secondary);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .confidence-bar-fill {
+            height: 100%;
+            border-radius: 3px;
+            background: var(--gradient-main);
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 0;
+        }
+
+        .confidence-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        /* Scores grid */
+        .scores-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .score-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            font-size: 13px;
+        }
+
+        .score-item .label {
+            text-transform: capitalize;
+            color: var(--text-secondary);
+        }
+
+        .score-item .value {
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Voice params */
+        .voice-params {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .param-card {
+            text-align: center;
+            padding: 16px 12px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .param-icon {
+            font-size: 20px;
+            margin-bottom: 6px;
+        }
+
+        .param-value {
+            font-size: 22px;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .param-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
+        }
+
+        .voice-description {
+            padding: 12px 16px;
+            background: rgba(139,92,246,0.06);
+            border: 1px solid rgba(139,92,246,0.12);
+            border-radius: 10px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 24px;
+        }
+
+        /* Audio player */
+        .audio-container {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .audio-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        audio {
+            width: 100%;
+            height: 40px;
+            border-radius: 8px;
+        }
+
+        /* Error */
+        .error-msg {
+            display: none;
+            padding: 12px 16px;
+            background: rgba(239,68,68,0.08);
+            border: 1px solid rgba(239,68,68,0.2);
+            border-radius: 10px;
+            color: var(--accent-red);
+            font-size: 14px;
+            margin-top: 16px;
+        }
+
+        .error-msg.visible { display: block; }
+
+        /* Backend badges */
+        .backend-info {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        .backend-badge {
+            padding: 4px 10px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 48px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--accent-purple);
+            text-decoration: none;
+        }
+
+        /* Emotion color mapping */
+        .emotion-joy { color: var(--accent-amber); }
+        .emotion-anger { color: var(--accent-red); }
+        .emotion-sadness { color: var(--accent-blue); }
+        .emotion-surprise { color: var(--accent-pink); }
+        .emotion-fear { color: var(--accent-purple); }
+        .emotion-disgust { color: var(--accent-emerald); }
+        .emotion-neutral { color: var(--text-secondary); }
+
+        /* Animations */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-up { animation: fadeUp 0.5s ease forwards; }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .container { padding: 24px 16px 40px; }
+            h1 { font-size: 30px; }
+            .card { padding: 20px; }
+            .voice-params { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+            .param-value { font-size: 18px; }
+            .scores-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <div class="bg-glow"></div>
+
+    <div class="container">
+        <header class="header">
+            <div class="header-badge">
+                <span class="dot"></span>
+                AI-Powered
+            </div>
+            <h1>The Empathy Engine</h1>
+            <p class="subtitle">Detect emotion in text and hear it come alive with expressive speech synthesis</p>
+        </header>
+
+        <div class="card">
+            <div class="card-title">Input Text</div>
+            <div class="input-group">
+                <textarea
+                    id="textInput"
+                    placeholder="Type something emotional... e.g., 'I just got the most amazing news! I can't believe it!'"
+                    maxlength="5000"
+                ></textarea>
+                <span class="char-count"><span id="charCount">0</span> / 5000</span>
+            </div>
+            <button class="btn-primary" id="speakBtn" onclick="handleSpeak()">
+                <span class="spinner"></span>
+                <span class="btn-text">🎭 Detect Emotion & Speak</span>
+            </button>
+            <div class="error-msg" id="errorMsg"></div>
+        </div>
+
+        <div class="results" id="results">
+            <div class="card fade-up">
+                <div class="card-title">Detected Emotion</div>
+                <div class="emotion-display">
+                    <div class="emotion-emoji" id="emotionEmoji">😐</div>
+                    <div class="emotion-info">
+                        <div class="emotion-label" id="emotionLabel">Neutral</div>
+                        <div class="emotion-meta">
+                            Intensity: <strong id="emotionIntensity">moderate</strong> &middot;
+                            Score: <strong id="emotionScore">0.00</strong>
+                        </div>
+                    </div>
+                </div>
+                <div class="confidence-bar-container">
+                    <div class="confidence-label">
+                        <span>Confidence</span>
+                        <span id="confidencePercent">0%</span>
+                    </div>
+                    <div class="confidence-bar-bg">
+                        <div class="confidence-bar-fill" id="confidenceBar"></div>
+                    </div>
+                </div>
+                <div class="scores-grid" id="scoresGrid"></div>
+            </div>
+
+            <div class="card fade-up">
+                <div class="card-title">Voice Parameters</div>
+                <div class="voice-params">
+                    <div class="param-card">
+                        <div class="param-icon">⚡</div>
+                        <div class="param-value" id="paramRate">175</div>
+                        <div class="param-label">Rate (wpm)</div>
+                    </div>
+                    <div class="param-card">
+                        <div class="param-icon">🎵</div>
+                        <div class="param-value" id="paramPitch">50</div>
+                        <div class="param-label">Pitch</div>
+                    </div>
+                    <div class="param-card">
+                        <div class="param-icon">🔊</div>
+                        <div class="param-value" id="paramVolume">0.80</div>
+                        <div class="param-label">Volume</div>
+                    </div>
+                </div>
+                <div class="voice-description" id="voiceDescription"></div>
+            </div>
+
+            <div class="card fade-up">
+                <div class="card-title">Generated Audio</div>
+                <div class="audio-container">
+                    <div class="audio-label">Emotionally Expressive Speech</div>
+                    <audio id="audioPlayer" controls></audio>
+                </div>
+                <div class="backend-info">
+                    <span class="backend-badge" id="emotionBackend">Emotion: —</span>
+                    <span class="backend-badge" id="ttsBackend">TTS: —</span>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            The Empathy Engine &middot; AI Intern Assessment &middot;
+            Built with FastAPI, HuggingFace Transformers &amp; pyttsx3
+        </footer>
+    </div>
+
+    <script>
+        const EMOTION_EMOJIS = {
+            joy: '😊', anger: '😠', sadness: '😢',
+            surprise: '😲', fear: '😨', disgust: '🤢', neutral: '😐'
+        };
+
+        const textarea = document.getElementById('textInput');
+        const charCount = document.getElementById('charCount');
+
+        textarea.addEventListener('input', () => {
+            charCount.textContent = textarea.value.length;
+        });
+
+        async function handleSpeak() {
+            const text = textarea.value.trim();
+            if (!text) {
+                showError('Please enter some text.');
+                return;
+            }
+
+            const btn = document.getElementById('speakBtn');
+            const errorMsg = document.getElementById('errorMsg');
+            const results = document.getElementById('results');
+
+            btn.classList.add('loading');
+            btn.disabled = true;
+            errorMsg.classList.remove('visible');
+            results.classList.remove('visible');
+
+            try {
+                const response = await fetch('/speak', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text }),
+                });
+
+                if (!response.ok) {
+                    const err = await response.json();
+                    throw new Error(err.detail || 'Server error');
+                }
+
+                const data = await response.json();
+                renderResults(data);
+            } catch (err) {
+                showError(err.message);
+            } finally {
+                btn.classList.remove('loading');
+                btn.disabled = false;
+            }
+        }
+
+        function renderResults(data) {
+            const results = document.getElementById('results');
+            const emotion = data.emotion;
+            const params = data.voice_params;
+
+            document.getElementById('emotionEmoji').textContent = EMOTION_EMOJIS[emotion.label] || '😐';
+            document.getElementById('emotionLabel').textContent = emotion.label;
+            document.getElementById('emotionLabel').className = `emotion-label emotion-${emotion.label}`;
+            document.getElementById('emotionIntensity').textContent = emotion.intensity;
+            document.getElementById('emotionScore').textContent = emotion.score.toFixed(4);
+
+            const pct = Math.round(emotion.score * 100);
+            document.getElementById('confidencePercent').textContent = pct + '%';
+            setTimeout(() => {
+                document.getElementById('confidenceBar').style.width = pct + '%';
+            }, 50);
+
+            const grid = document.getElementById('scoresGrid');
+            grid.innerHTML = '';
+            const sorted = Object.entries(emotion.all_scores).sort((a,b) => b[1] - a[1]);
+            sorted.forEach(([label, score]) => {
+                const item = document.createElement('div');
+                item.className = 'score-item';
+                item.innerHTML = `
+                    <span class="label">${EMOTION_EMOJIS[label] || ''} ${label}</span>
+                    <span class="value emotion-${label}">${(score * 100).toFixed(1)}%</span>
+                `;
+                grid.appendChild(item);
+            });
+
+            document.getElementById('paramRate').textContent = params.rate;
+            document.getElementById('paramPitch').textContent = params.pitch;
+            document.getElementById('paramVolume').textContent = params.volume.toFixed(2);
+            document.getElementById('voiceDescription').textContent = data.voice_description;
+
+            const audio = document.getElementById('audioPlayer');
+            audio.src = data.audio_url + '?t=' + Date.now();
+            audio.load();
+
+            document.getElementById('emotionBackend').textContent = 'Emotion: ' + data.backends.emotion;
+            document.getElementById('ttsBackend').textContent = 'TTS: ' + data.backends.tts;
+
+            results.classList.add('visible');
+        }
+
+        function showError(msg) {
+            const errorMsg = document.getElementById('errorMsg');
+            errorMsg.textContent = '⚠️ ' + msg;
+            errorMsg.classList.add('visible');
+        }
+
+        textarea.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                handleSpeak();
+            }
+        });
+    </script>
+</body>
+</html>

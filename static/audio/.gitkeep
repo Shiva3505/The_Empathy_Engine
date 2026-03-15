@@ -1,0 +1,2 @@
+# This file ensures the audio directory is tracked by Git.
+# Generated audio files (.wav, .mp3) are gitignored.
